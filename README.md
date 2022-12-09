@@ -39,3 +39,11 @@ $ make
 ```
 
 If you configured everything correctly the bot will be connected to discord. Either before or after this step you can invite your bot to the desired servers using the developer portal.
+
+## Uninstallation
+
+You can remove all the infrastructure and clean up your working directory by running:
+
+```
+$ make destroy
+```
