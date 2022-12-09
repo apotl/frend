@@ -8,6 +8,7 @@ Make sure you have these installed on your system:
 
 * Docker
 * Python3
+ * virtualenv (```pip install virtualenv```)
 * Terraform
 * .aws/config and .aws/credentials filled out with the access key, secret access key, and the region. This is needed for Terraform to function.
 * "make", usually installed with the build-essentials package on Debian
