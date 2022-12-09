@@ -1,0 +1,13 @@
+image_name: myimage
+container_name: mycontainer
+discord_token: mytoken
+openai_token: mytoken
+
+aws_access_key_id: my_access_key
+aws_secret_access_key: my_secret_key
+region_name: my_region
+
+prompt: |
+  Your name is {self}. Write a reply to the following message:
+  
+  {message}
