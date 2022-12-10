@@ -1,6 +1,6 @@
 # Create a new Fargate cluster
 resource "aws_ecs_cluster" "fargate_cluster" {
-  name = local.config["cluster_name"]
+  name = module.config.config.cluster_name
 }
 
 resource "aws_ecs_cluster_capacity_providers" "capacity_providers" {
@@ -17,7 +17,7 @@ resource "aws_ecs_cluster_capacity_providers" "capacity_providers" {
 
 # Define the task that will run on the Fargate cluster
 resource "aws_ecs_task_definition" "fargate_task" {
-  family = local.config["container_name"]
+  family = module.config.config.container_name
   container_definitions = data.template_file.container_definitions.rendered
   requires_compatibilities = ["FARGATE"]
   execution_role_arn = aws_iam_role.ecs_execution_role.arn
@@ -28,7 +28,7 @@ resource "aws_ecs_task_definition" "fargate_task" {
 
 # Create a new Fargate service that will run the task on the cluster
 resource "aws_ecs_service" "fargate_service" {
-  name = local.config["container_name"]
+  name = module.config.config.container_name
   cluster = aws_ecs_cluster.fargate_cluster.id
   task_definition = aws_ecs_task_definition.fargate_task.arn
   desired_count = 1
@@ -38,8 +38,8 @@ resource "aws_ecs_service" "fargate_service" {
   deployment_maximum_percent = 100
   launch_type = "FARGATE"
   network_configuration {
-    subnets = [aws_subnet.fargate_subnet.id]
-    security_groups = [aws_security_group.ecs_service.id]
+    subnets = [module.networking.subnet]
+    security_groups = [module.networking.security_group]
     assign_public_ip = true
   }
 }
@@ -47,9 +47,11 @@ resource "aws_ecs_service" "fargate_service" {
 data template_file "container_definitions" {
   template = "${file("${path.module}/container-definitions.json")}"
   vars = {
-    image_name = data.aws_ecr_repository.my_repo_data.repository_url
-    container_name = local.config["container_name"]
+    image_name = module.ecr.repository_url
+    container_name = module.config.config.container_name
     image_tag = var.image_tag
     region = data.aws_region.current.name
   }
 }
+
+data "aws_region" "current" {}

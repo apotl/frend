@@ -1,12 +1,5 @@
-resource "aws_security_group" "ecs_service" {
+resource "aws_security_group" "security_group" {
   vpc_id = aws_vpc.main.id
-
-  ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   egress {
     from_port   = 0
@@ -16,14 +9,14 @@ resource "aws_security_group" "ecs_service" {
   }
 }
 
-resource "aws_subnet" "fargate_subnet" {
+resource "aws_subnet" "subnet" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.1.0/24"
   availability_zone = "us-east-1a"
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "Friend Subnet"
+    Name = "frend Subnet"
   }
 }
 
@@ -31,7 +24,7 @@ resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "My VPC"
+    Name = "frend VPC"
   }
 }
 
@@ -39,7 +32,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "My Internet Gateway"
+    Name = "frend IGW"
   }
 }
 
@@ -52,11 +45,11 @@ resource "aws_route_table" "main" {
   }
 
   tags = {
-    Name = "Main Route Table"
+    Name = "frend Main Route Table"
   }
 }
 
 resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.fargate_subnet.id
+  subnet_id      = aws_subnet.subnet.id
   route_table_id = aws_route_table.main.id
 }
