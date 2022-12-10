@@ -17,7 +17,7 @@ resource "aws_ecs_cluster_capacity_providers" "capacity_providers" {
 
 # Define the task that will run on the Fargate cluster
 resource "aws_ecs_task_definition" "fargate_task" {
-  family = local.config["image_name"]
+  family = local.config["container_name"]
   container_definitions = data.template_file.container_definitions.rendered
   requires_compatibilities = ["FARGATE"]
   execution_role_arn = aws_iam_role.ecs_execution_role.arn
@@ -28,11 +28,14 @@ resource "aws_ecs_task_definition" "fargate_task" {
 
 # Create a new Fargate service that will run the task on the cluster
 resource "aws_ecs_service" "fargate_service" {
-  name = local.config["image_name"]
+  name = local.config["container_name"]
   cluster = aws_ecs_cluster.fargate_cluster.id
   task_definition = aws_ecs_task_definition.fargate_task.arn
   desired_count = 1
   force_new_deployment = true
+  wait_for_steady_state = true
+  deployment_minimum_healthy_percent = 0
+  deployment_maximum_percent = 100
   launch_type = "FARGATE"
   network_configuration {
     subnets = [aws_subnet.fargate_subnet.id]

@@ -7,7 +7,16 @@ aws_access_key_id: my_access_key
 aws_secret_access_key: my_secret_key
 region_name: my_region
 
-prompt: |
-  Your name is {self}. Write a reply to the following message:
-  
-  {message}
+nick: frend
+
+completion_opts:
+  engine: text-davinci-003
+  max_tokens: 512
+  temperature: 0.5
+  top_p: 1
+  frequency_penalty: 0
+  presence_penalty: 0
+  prompt: |
+    Your name is {self}. Reply to the following:
+
+    {message}

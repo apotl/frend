@@ -12,7 +12,8 @@ init: build
 # Rule for running the code
 deploy: build
 		cd tf && \
-		terraform apply
+		terraform taint aws_ecs_task_definition.fargate_task && \
+		terraform apply -auto-approve
 
 clean:
 		sudo rm -rf venv/

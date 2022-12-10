@@ -8,7 +8,7 @@ Make sure you have these installed on your system:
 
 * Docker
 * Python3
- * virtualenv (```pip install virtualenv```)
+    * virtualenv (```pip install virtualenv```)
 * Terraform
 * .aws/config and .aws/credentials filled out with the access key, secret access key, and the region. This is needed for Terraform to function.
 * "make", usually installed with the build-essentials package on Debian
@@ -22,11 +22,14 @@ Set these properties:
 * ```container_name```: Name of the container in the ECS task.
 * ```discord_token```: Discord token. Get this from the developer portal
 * ```openai_token```: Token from OpenAI
+* ```nick```: Nickname the bot will set for itself upon guild join
 * ```aws_access_key_id```: AWS access key ID, needed by build.py
 * ```aws_secret_access_key```: AWS secret access key, needed by build.py
 * ```region_name```: AWS region, needed by build.py
-* ```prompt```: The prompt the bot will follow when it is mentioned or reply to. {message} is the content of the message that pinged the bot and {self} is the bot's string name.
-
+* ```completion_opts```: Request body per OpenAI docs (https://beta.openai.com/docs/api-reference/completions)
+    * ```prompt``` property will process special substitutions:
+        * ```{self}```: The bot's nickname
+        * ```{message}```: The content of the message the bot is responding to
 ## tf/state.tf
 
 Edit the properties to write the state file. Alternatively, remove this file if you would rather have your state file stored locally.
@@ -40,7 +43,7 @@ make init
 make
 ```
 
-If you configured everything correctly the bot will be connected to discord. Either before or after this step you can invite your bot to the desired servers using the developer portal.
+If you configured everything correctly the bot will be connected to discord. Either before or after this step you can invite your bot to the desired guilds using the developer portal.
 
 ## Uninstallation
 
