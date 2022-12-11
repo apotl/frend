@@ -1,4 +1,4 @@
 variable "config_file_location" {
     type = string
-    default = "../config.yml"
+    default = "config.yml"
 }

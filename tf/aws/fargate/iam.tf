@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "ecs_execution_role" {
-  name = "ecs_execution_role"
+  name = "${local.configdata.container_name}"
 
   assume_role_policy = <<EOF
 {
@@ -19,7 +19,7 @@ EOF
 }
 
 resource "aws_iam_policy" "ecs_execution_policy" {
-  name = "ecs_execution_policy"
+  name = "${local.configdata.container_name}"
 
   policy = <<EOF
 {
@@ -47,7 +47,7 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "ecs_execution_attachment" {
-  name = "ecs_execution_attachment"
+  name = "${local.configdata.container_name}"
   policy_arn = aws_iam_policy.ecs_execution_policy.arn
   roles = [aws_iam_role.ecs_execution_role.name]
 }

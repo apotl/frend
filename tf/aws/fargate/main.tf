@@ -10,3 +10,7 @@ module "networking" {
 module "config" {
     source = "../../config"
 }
+
+locals {
+  configdata = module.config.data.deployment.ecs
+}

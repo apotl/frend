@@ -1,3 +1,3 @@
-output "config" {
+output "data" {
   value = local.config
 }

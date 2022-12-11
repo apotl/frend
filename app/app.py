@@ -1,14 +1,14 @@
 import discord
-import keys
+import app.config as config
 import chatto
 
 client = discord.Client(intents=discord.Intents.all())
 
-bot_token = keys.bot_token
+bot_token = config.bot_token
 
 @client.event
 async def on_guild_available(guild):
-    await guild.me.edit(nick=keys.data['nick'])
+    await guild.me.edit(nick=config.data['nick'])
 
 @client.event
 async def on_message(message):
@@ -22,7 +22,7 @@ async def on_message(message):
             'message': message.content
         }
 
-        prompt = keys.completion_opts['prompt']
+        prompt = config.completion_opts['prompt']
 
         query = prompt.format(**params)
 

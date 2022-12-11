@@ -1,5 +1,5 @@
 tf/state.tf
-config.yml
+*.yml
 venv/
 __pycache__/
 .terraform*

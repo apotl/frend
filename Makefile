@@ -1,18 +1,20 @@
+FRENDCONFIG=config.yml
+
 all: build deploy
 
 # Rule for building the code
-build: build.sh build.py
-		sudo ./build.sh
+build: build.sh main.py
+		./build.sh "${FRENDCONFIG}"
 
 init: build
 		cd tf && \
 		terraform init && \
-		terraform import aws_ecr_repository.my_repo frend
+		terraform import module.fargate.module.ecr.aws_ecr_repository.ecr_repository frendstaging
 
 # Rule for running the code
 deploy: build
+#terraform taint aws_ecs_task_definition.fargate_task
 		cd tf && \
-		terraform taint aws_ecs_task_definition.fargate_task && \
 		terraform apply -auto-approve
 
 clean:
@@ -23,3 +25,7 @@ destroy: clean
 		cd tf && \
 		terraform destroy
 		rm -rf tf/.terraform*
+
+tfplan:
+		cd tf && \
+		terraform plan

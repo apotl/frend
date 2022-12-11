@@ -1,11 +1,11 @@
 import openai
-import keys
+import app.config as config
 
-openai.api_key = keys.openai_token
+openai.api_key = config.openai_token
 
 def gen_response(query):
 
-    opts = keys.completion_opts.copy()
+    opts = config.completion_opts.copy()
     opts['prompt'] = query
 
     response = openai.Completion.create(**opts)
