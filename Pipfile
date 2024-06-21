@@ -1,0 +1,16 @@
+[packages]
+aws-cdk-lib = ">=2.0.0"
+pyyaml = "*"
+
+[lambda]
+openai = "*"
+pyyaml = "*"
+
+[dev-packages]
+pytest = "*"
+pytest-cov = "*"
+black = "*"
+pre-commit = "*"
+
+[requires]
+python_version = "3.12"

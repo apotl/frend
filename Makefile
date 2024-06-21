@@ -1,25 +1,24 @@
-all: build deploy
+CDK_DOCKER_CMD=docker run -it -v ~/.aws/credentials:/root/.aws/credentials --rm --name frend frend
 
-# Rule for building the code
-build: build.sh build.py
-		sudo ./build.sh
+all: deploy
 
-init: build
-		cd tf && \
-		terraform init && \
-		terraform import aws_ecr_repository.my_repo frend
+install:
+		pipenv install -d --categories lambda
+		pre-commit install
 
-# Rule for running the code
-deploy: build
-		cd tf && \
-		terraform taint aws_ecs_task_definition.fargate_task && \
-		terraform apply -auto-approve
+gen-reqs:
+		pipenv requirements > requirements.txt
+		pipenv requirements --categories lambda > src/requirements-lambda.txt
+
+build: gen-reqs
+		docker build -t frend .
+
+init: gen-reqs build
+		${CDK_DOCKER_CMD} bootstrap
+
+deploy: gen-reqs build
+		${CDK_DOCKER_CMD} deploy --require-approval never
 
 clean:
-		sudo rm -rf venv/
-		sudo rm -rf __pycache__/
-
-destroy: clean
-		cd tf && \
-		terraform destroy
-		rm -rf tf/.terraform*
+		pipenv clean
+		docker rmi friend
