@@ -1,6 +1,7 @@
 tf/state.tf
-config.yml
+*config.yml
 venv/
 __pycache__/
 .terraform*
 terraform.tfstate
+Modelfile

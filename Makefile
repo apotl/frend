@@ -4,6 +4,11 @@ all: build deploy
 build: build.sh build.py
 		sudo ./build.sh
 
+run-local: build
+		docker stop frend || true
+		sleep 3
+		docker run -d --net=host --name frend --rm frend
+
 init: build
 		cd tf && \
 		terraform init && \
@@ -18,8 +23,11 @@ deploy: build
 clean:
 		sudo rm -rf venv/
 		sudo rm -rf __pycache__/
+		docker rm frend
 
 destroy: clean
 		cd tf && \
 		terraform destroy
 		rm -rf tf/.terraform*
+		docker stop frend
+		docker rmi frend
