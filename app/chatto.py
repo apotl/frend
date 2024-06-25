@@ -37,6 +37,7 @@ def gen_response_history(
     opts = keys.completion_opts.copy()
 
     messages = []
+    prompt_set = False
     for message in history:
         new_entry = {}
         if message.author.name == client_user.name:
@@ -44,7 +45,11 @@ def gen_response_history(
             new_entry["content"] = message.content
         else:
             new_entry["role"] = "user"
-            new_entry["content"] = roleplay_prompt + "\n\n" + message.content
+            if not prompt_set:
+                new_entry["content"] = roleplay_prompt + "\n\n" + message.content
+            else:
+                new_entry["content"] = message.content
+
         messages += [new_entry]
     logging.error(messages)
 

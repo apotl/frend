@@ -3,6 +3,7 @@ import keys
 import chatto
 import traceback
 import asyncio
+import logging
 from time import sleep
 
 client = discord.Client(intents=discord.Intents.all())
@@ -22,10 +23,23 @@ async def on_guild_available(guild):
 def get_message_reference_chain(chain: list[discord.Message]) -> list[discord.Message]:
     if len(chain) < 1:
         raise ValueError("chain too small")
-    if isinstance(chain[0].reference, discord.MessageReference):
-        chain.insert(0, chain[0].reference.resolved)
-        chain = get_message_reference_chain(chain)
-    return chain
+    if (
+        isinstance(chain[0], discord.Message)
+        and isinstance(chain[0].reference, discord.MessageReference)
+        and chain[0].reference.resolved is not None
+    ):
+        logging.error(
+            f"{chain[0].id} ({chain[0].content[:10]}) references {chain[0].reference.resolved.id} ({chain[0].reference.resolved.content[:10]})"
+        )
+        m = chain[0].reference.resolved
+        chain.insert(0, m)
+        return get_message_reference_chain(chain.copy())
+    logging.error(f"{chain[0].id} ({chain[0].content[:10]}) references NOTHING")
+    logging.error(
+        isinstance(chain[0], discord.Message),
+        isinstance(chain[0].reference, discord.MessageReference),
+    )
+    return chain.copy()
 
 
 @client.event
@@ -45,6 +59,9 @@ async def on_message(message: discord.Message):
             message.content = message.content.replace(selfmention, client.user.name)
 
             message_history = get_message_reference_chain([message])
+            logging.error([m.id for m in message_history])
+
+            discord.Message()
 
             async with message.channel.typing():
                 response = chatto.gen_response_history(
@@ -52,7 +69,9 @@ async def on_message(message: discord.Message):
                 )
                 i = 0
                 while i < len(response):
-                    await message.channel.send(response[i : i + MAX_MESSAGE_LENGTH])
+                    await message.channel.send(
+                        response[i : i + MAX_MESSAGE_LENGTH], reference=message
+                    )
                     i += MAX_MESSAGE_LENGTH
     except Exception:
         traceback.print_exc()
