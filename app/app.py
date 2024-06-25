@@ -61,8 +61,6 @@ async def on_message(message: discord.Message):
             message_history = get_message_reference_chain([message])
             logging.error([m.id for m in message_history])
 
-            discord.Message()
-
             async with message.channel.typing():
                 response = chatto.gen_response_history(
                     message_history, client.user, roleplay_prompt=garbage
