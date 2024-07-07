@@ -6,7 +6,7 @@ import discord
 import logging
 
 
-def gen_response(query) -> str:
+def gen_response(query) -> str | None:
 
     opts = keys.completion_opts.copy()
 
@@ -22,10 +22,16 @@ def gen_response(query) -> str:
         },
     )
 
+    message = resp.json().get("message")
+
+    if message is None:
+        logging.error(traceback.format_exc())
+        return None
+
     try:
-        return resp.json()["message"]["content"]
+        return message["content"]
     except KeyError:
-        traceback.print_exc()
+        logging.error(traceback.format_exc())
         return (
             f"```{traceback.format_exc()}``````{json.dumps(resp.json(), indent=4)}```"
         )
@@ -33,7 +39,7 @@ def gen_response(query) -> str:
 
 def gen_response_history(
     history: list[discord.Message], client_user: discord.User, roleplay_prompt=""
-):
+) -> str | None:
     opts = keys.completion_opts.copy()
 
     messages = []
@@ -51,7 +57,7 @@ def gen_response_history(
                 new_entry["content"] = message.content
 
         messages += [new_entry]
-    logging.error(messages)
+    logging.info(messages)
 
     resp = requests.post(
         f"{keys.ollama_url}/api/chat",
@@ -65,10 +71,16 @@ def gen_response_history(
         },
     )
 
+    message = resp.json().get("message")
+
+    if message is None:
+        logging.error(traceback.format_exc())
+        return None
+
     try:
-        return resp.json()["message"]["content"]
+        return message["content"]
     except KeyError:
-        traceback.print_exc()
+        logging.error(traceback.format_exc())
         return (
             f"```{traceback.format_exc()}``````{json.dumps(resp.json(), indent=4)}```"
         )

@@ -28,14 +28,14 @@ def get_message_reference_chain(chain: list[discord.Message]) -> list[discord.Me
         and isinstance(chain[0].reference, discord.MessageReference)
         and chain[0].reference.resolved is not None
     ):
-        logging.error(
+        logging.debug(
             f"{chain[0].id} ({chain[0].content[:10]}) references {chain[0].reference.resolved.id} ({chain[0].reference.resolved.content[:10]})"
         )
         m = chain[0].reference.resolved
         chain.insert(0, m)
         return get_message_reference_chain(chain.copy())
-    logging.error(f"{chain[0].id} ({chain[0].content[:10]}) references NOTHING")
-    logging.error(
+    logging.debug(f"{chain[0].id} ({chain[0].content[:10]}) references NOTHING")
+    logging.debug(
         isinstance(chain[0], discord.Message),
         isinstance(chain[0].reference, discord.MessageReference),
     )
@@ -59,12 +59,14 @@ async def on_message(message: discord.Message):
             message.content = message.content.replace(selfmention, client.user.name)
 
             message_history = get_message_reference_chain([message])
-            logging.error([m.id for m in message_history])
+            logging.debug([m.id for m in message_history])
 
             async with message.channel.typing():
-                response = chatto.gen_response_history(
-                    message_history, client.user, roleplay_prompt=garbage
-                )
+                response = None
+                while response is None:
+                    response = chatto.gen_response_history(
+                        message_history, client.user, roleplay_prompt=garbage
+                    )
                 i = 0
                 while i < len(response):
                     await message.channel.send(
